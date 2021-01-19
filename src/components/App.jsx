@@ -9,22 +9,6 @@ import TransactionsTable from "./TransactionsTable";
 //   createData('GNOG', 10.1, 20, 939.01, 1112.20, 179.1, 13.11),
 // ];
 
-// function createData(name, weight, quantity, book, market, unrealized, daily) {
-//   return {
-//     name,
-//     weight,
-//     quantity,
-//     book,
-//     market,
-//     unrealized,
-//     daily,
-//     history: [
-//       { date: '2020-01-05', type: 'BUY', quantity: 3, price: 12.334, total: 121.93 },
-//       { date: '2020-01-05', type: 'SELL', quantity: 11, price: 13.334, total: 321.12 },
-//     ],
-//   };
-// }
-
 function App() {
 
   const [transactions, setTransactions] = useState([]);

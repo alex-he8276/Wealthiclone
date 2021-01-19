@@ -61,11 +61,7 @@ export default function FormDialog(props) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(transaction),
-    });
-    // const body = await response.text();
-    // // setState({ responseToPost: body });
-    
-    // // handleClose(props.handleAddTransaction(transaction));
+    });    
   };
 
   return (
@@ -76,7 +72,7 @@ export default function FormDialog(props) {
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle>Add a Transaction</DialogTitle>
         <form onSubmit={handleSubmit} noValidate autoComplete="off">
-          <DialogContent>
+          <DialogContent style={{paddingTop: 0}}>
             <DialogContentText>
               To add a transaction, please enter all the following details. Your holdings will automatically update.
           </DialogContentText>
@@ -159,7 +155,6 @@ export default function FormDialog(props) {
             </Button>
           </DialogActions>
         </form>
-
       </Dialog>
     </React.Fragment>
   )

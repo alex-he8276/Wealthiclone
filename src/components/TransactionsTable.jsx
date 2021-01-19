@@ -20,17 +20,6 @@ const useStyles = makeStyles({
 });
 
 export default function TransactionsTable(props) {
-  // const [transactions, setTransactions] = React.useState([]);
-
-  // const handleAddTransaction = (newTransaction) => {
-  //   setTransactions(newTransaction)
-  //   setTransactions((prev) => {
-  //     return [
-  //       newTransaction
-  //     ]
-  //   })
-  // }
-
   return (
     <Paper className="holdingsTable">
       <Typography style={{ display: 'inline-block' }} variant="h4">Transactions</Typography>
@@ -40,11 +29,11 @@ export default function TransactionsTable(props) {
           <TableHead>
             <TableRow>
               <TableCell>Ticker</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Quantity</TableCell>
-              <TableCell>Price ($)</TableCell>
-              <TableCell>Total ($)</TableCell>
+              <TableCell align="right">Date</TableCell>
+              <TableCell align="right">Type</TableCell>
+              <TableCell align="right">Quantity</TableCell>
+              <TableCell align="right">Price ($)</TableCell>
+              <TableCell align="right">Total ($)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

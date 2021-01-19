@@ -39,14 +39,14 @@ function Row(props) {
         <TableCell component="th" scope="row">
           {row.ticker}
         </TableCell>
-        <TableCell align="right">{row.weight}</TableCell>
+        <TableCell align="right">{row.weight.toFixed(2)}</TableCell>
         <TableCell align="right">{row.quantity}</TableCell>
-        <TableCell align="right">{row.bookValue}</TableCell>
-        <TableCell align="right">{row.marketValue}</TableCell>
-        <TableCell align="right">{row.unrealizedPL}</TableCell>
-        <TableCell align="right">{row.averagePrice}</TableCell>
-        <TableCell align="right">{row.currentPrice}</TableCell>
-        <TableCell align="right">{row.dayPL + " %"}</TableCell>
+        <TableCell align="right">{row.bookValue.toFixed(2)}</TableCell>
+        <TableCell align="right">{row.marketValue.toFixed(2)}</TableCell>
+        <TableCell align="right">{row.unrealizedPL.toFixed(2)}</TableCell>
+        <TableCell align="right">{row.averagePrice.toFixed(2)}</TableCell>
+        <TableCell align="right">{row.currentPrice.toFixed(2)}</TableCell>
+        <TableCell align="right">{row.dayPL.toFixed(2) + " %"}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -93,7 +93,6 @@ export default function HoldingsTable(props) {
   return (
     <Paper className="holdingsTable">
       <Typography style={{display: 'inline-block'}} variant="h4">Holdings</Typography>
-      {/* <FormDialog></FormDialog> */}
       <TableContainer >
         <Table>
           <TableHead>
