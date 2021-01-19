@@ -6,11 +6,11 @@ const MongoClient = require('mongodb').MongoClient;
 
 const app = express();
 const port = process.env.PORT || 5000;
-const uri = "mongodb+srv://username:password@cluster0.rdgkw.mongodb.net/dbName?retryWrites=true&w=majority";
-const dbName = "database";
+
+const uri = "mongodb+srv://un:pw@cluster0.rdgkw.mongodb.net/database?retryWrites=true&w=majority"; const dbName = "database";
 const client = new MongoClient(uri, { useNewUrlParser: true });
 let transactions = [];
-const holdings = [];
+let holdings = [];
 
 async function run() {
   try {
@@ -21,9 +21,16 @@ async function run() {
     const db = client.db(dbName);
     const transactionsCol = db.collection("transactions");
     transactionsCol.find().toArray()
-    .then(data => {
-      transactions = data;
-    });
+      .then(data => {
+        transactions = data;
+      });
+
+      const holdingsCol = db.collection("holdings");
+      holdingsCol.find().toArray()
+      .then(data => {
+        holdings = data;
+      });
+
 
     // ========================
     // Middlewares
@@ -46,8 +53,8 @@ async function run() {
         total: parseInt(req.body.quantity) * Number(req.body.price),
       });
       transactionsCol.insertOne(transactions[transactions.length - 1])
-      .then(res.send(transactions))
-      .catch((err) => console.log(err));
+        .then(res.send(transactions))
+        .catch((err) => console.log(err));
     });
 
     app.get('/transactions', (req, res) => {
@@ -56,41 +63,42 @@ async function run() {
     });
 
     app.get('/holdings', async (req, res) => {
-      transactions.forEach((transaction) => {
+      // Create holdings array
+      const newTransaction = transactions[transactions.length - 1];
 
-        if (transaction.tType === 'BUY') {
-          deltaQuantity = transaction.quantity;
-        } else if (transaction.tType === 'SELL') {
-          deltaQuantity = -transaction.quantity;
+      if (newTransaction && !newTransaction.exported) {
+        newTransaction.exported = true;
+        if (newTransaction.tType === 'BUY') {
+          deltaQuantity = newTransaction.quantity;
+        } else if (newTransaction.tType === 'SELL') {
+          deltaQuantity = -newTransaction.quantity;
         }
-
-        const index = holdings.findIndex(holding => holding.ticker == transaction.ticker);
-
+  
+        const index = holdings.findIndex(holding => holding.ticker == newTransaction.ticker);
+  
         if (index >= 0) {
           const currentHolding = holdings[index];
-          if (transaction.tType === 'BUY') {
-            currentHolding.averagePrice = ((currentHolding.averagePrice * currentHolding.quantity) + transaction.price * deltaQuantity) / (deltaQuantity + currentHolding.quantity)
-            currentHolding.bookValue += transaction.total;
-          } else if (transaction.tType === 'SELL') {
-            currentHolding.averagePrice = ((currentHolding.averagePrice * currentHolding.quantity) + transaction.price * deltaQuantity) / (deltaQuantity + currentHolding.quantity)
-            currentHolding.bookValue += deltaQuantity * transaction.price;
+          if (newTransaction.tType === 'BUY') {
+            currentHolding.averagePrice = ((currentHolding.averagePrice * currentHolding.quantity) + newTransaction.price * deltaQuantity) / (deltaQuantity + currentHolding.quantity)
+            currentHolding.bookValue += newTransaction.total;
+          } else if (newTransaction.tType === 'SELL') {
+            currentHolding.averagePrice = ((currentHolding.averagePrice * currentHolding.quantity) + newTransaction.price * deltaQuantity) / (deltaQuantity + currentHolding.quantity)
+            currentHolding.bookValue += deltaQuantity * newTransaction.price;
           }
           currentHolding.quantity += deltaQuantity;
-
         } else {
-          // Add new holdings object
           holdings.push({
-            ticker: transaction.ticker,
+            ticker: newTransaction.ticker,
             quantity: deltaQuantity,
-            bookValue: transaction.total,
-            averagePrice: transaction.price,
+            bookValue: newTransaction.total,
+            averagePrice: newTransaction.price,
           })
         }
+      }
 
-      })
 
-      //Loop thru all holdings and call api
-      await callApi(holdings);
+      // Call api to fetch price info for all holdings
+      await callApi(holdings, holdingsCol);
 
       JSON.stringify(holdings);
       res.send(holdings);
@@ -110,22 +118,31 @@ async function run() {
 }
 run().catch(console.dir);
 
-// Determines price data and
-const callApi = async (holdings) => {
+// Fetches price data and determine weight calculations
+const callApi = async (holdings, holdingsCol) => {
   let total = 0;
   for (let holding of holdings) {
-    const apiUrl = `${iex.iex.base_url}/stock/${holding.ticker}/chart/5d?token=${iex.iex.api_token}&displayPercent=true`
-    const response = await fetch(apiUrl);
-    const data = await response.json();
-    const prevDay = data[data.length - 1];
-    holding.currentPrice = prevDay.close;
+    if (holding.lastUpdated !== new Date().toDateString()) {
+      const apiUrl = `${iex.iex.base_url}/stock/${holding.ticker}/chart/5d?token=${iex.iex.api_token}&displayPercent=true`
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      const prevDay = data[data.length - 1];
+      holding.currentPrice = prevDay.close;
+      // holding.dayPL = `${(prevDay.change * holding.quantity)} ${prevDay.changePercent}`;
+      holding.dayPL = prevDay.changePercent;
+      holding.lastUpdated = new Date().toDateString();
+    }
     holding.marketValue = holding.currentPrice * holding.quantity;
     holding.unrealizedPL = holding.marketValue - holding.bookValue;
-    holding.dayPL = `${(prevDay.change * holding.quantity)} ${prevDay.changePercent}`;
     total += holding.marketValue;
   }
 
   for (let holding of holdings) {
     holding.weight = (holding.marketValue / total) * 100;
   }
+
+  //FUTURE: ONLY REPLACE ENTRIES THAT MUST BE UPDATED
+  const result = await holdingsCol.deleteMany({});
+  console.log("Deleted " + result.deletedCount + " documents");
+  await holdingsCol.insertMany(holdings, { ordered: true })
 }
