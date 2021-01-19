@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import HoldingsTable from "./HoldingsTable";
 import TransactionsTable from "./TransactionsTable";
+import MyResponsiveLine from "./LineGraph";
+import Paper from '@material-ui/core/Paper';
 
 // Some sort of prototyping 
 // const rows = [
@@ -33,6 +35,11 @@ function App() {
   return (
     <div className="App">
       <Header />
+      <Paper style={{ height: 500, margin: '20px 20%', padding: '30px'}}>
+      <h3>RANDOM VALUES</h3>
+        <MyResponsiveLine>
+        </MyResponsiveLine>
+      </Paper>
       <TransactionsTable transactions={transactions} />
       <HoldingsTable rows={holdings} />
     </div>
