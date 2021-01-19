@@ -1,6 +1,9 @@
 # Wealthiclone
 
-Wealthiclone is a work-in-progress web application that allows users to track their investments.
+Wealthiclone is a work-in-progress web application that allows users to track their investments. 
+It is built using the MERN stack with ReactJS + MaterialUI for the front-end, ExpressJS for the server and MongoDB for the database.
+
+![alt text](https://i.ibb.co/jJ28hcS/Wealthiclone-IMG.png)
 
 ## TODO
 - Add exisiting holdings into database (to reduce API calls)
