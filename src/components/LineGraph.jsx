@@ -7,7 +7,7 @@ import { ResponsiveLine } from '@nivo/line'
 const data = [
   {
     "id": "Your Portfolio",
-    "color": "hsl(191, 70%, 50%)",
+    "color": "hsl(151, 70%, 50%)",
     "data": [
       {
         "x": "01/11/2021",
@@ -78,6 +78,9 @@ export default function MyResponsiveLine() {
         legendPosition: 'middle'
       }}
       curve={'monotoneX'}
+      areaBaselineValue={'320'}
+      enableArea={true}
+      colors={{ scheme: 'accent' }}
       pointSize={10}
       pointColor={{ theme: 'background' }}
       pointBorderWidth={2}

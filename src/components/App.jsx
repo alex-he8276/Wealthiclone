@@ -36,7 +36,7 @@ function App() {
     <div className="App">
       <Header />
       <Paper style={{ height: 500, margin: '20px 20%', padding: '30px'}}>
-      <h3>RANDOM VALUES</h3>
+      <h3>PLACEHOLDER VALUES</h3>
         <MyResponsiveLine>
         </MyResponsiveLine>
       </Paper>
