@@ -6,9 +6,10 @@ It is built using the MERN stack with ReactJS + MaterialUI for the front-end, Ex
 ![alt text](https://i.ibb.co/jJ28hcS/Wealthiclone-IMG.png)
 
 ## TODO
-- Add exisiting holdings into database (to reduce API calls)
+- Reduce API calls and database operations by efficiently determining which holdings need to be updated
 - Add a graph to track portfolio value over time
 - User input validation
+- Multiple user account capaibility and authentication
 - ... and more ...
 
 ### `npm run dev`
